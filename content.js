@@ -1,4 +1,4 @@
-let typingData = {
+const initialTypingData = {
   user_id: "a1b2c3d4e5f6g7h8i9j0",
   appContext: document.location.href,
   setting: 1,
@@ -25,37 +25,12 @@ let typingData = {
   textStructure: []
 };
 
-let keyPressStartTimes = {};
+let typingData = { ...initialTypingData };
 let typingSessionActive = false;
 let lastElement = null;
 
 function resetTypingData() {
-  typingData = {
-    user_id: "a1b2c3d4e5f6g7h8i9j0",
-    appContext: document.location.href,
-    setting: 1,
-    sourceId: "demo",
-    studyId: "",
-    text: [],
-    timeZone: new Date().getTimezoneOffset() / -60,
-    startUnixTime: Date.now(),
-    pressTimes: [],
-    releaseTimes: [],
-    keyAreas: [],
-    keyTypes: [],
-    positionX: [],
-    positionY: [],
-    pressure: [],
-    swipe: [],
-    autocorrectLengths: [0],
-    autocorrectTimes: [],
-    autocorrectWords: [],
-    predictionLength: null,
-    predictionLengths: [],
-    predictionTimes: [],
-    predictionWords: [],
-    textStructure: []
-  };
+  typingData = { ...initialTypingData };
   typingSessionActive = false;
   lastElement = null;
   console.log("Typing data reset");
@@ -75,8 +50,10 @@ function trimArraysToMatchLength() {
   const releaseLength = typingData.releaseTimes.length;
 
   if (pressLength > releaseLength) {
+    console.log('The array was trimmed, keydown was longer')
     typingData.pressTimes.length = releaseLength;
   } else if (releaseLength > pressLength) {
+    console.log('The array was trimmed, keyup was longer')
     typingData.releaseTimes.length = pressLength;
   }
 }
@@ -114,47 +91,57 @@ const sendTypingData = debounce(() => {
   trySendMessage();
 }, 5000);
 
-document.addEventListener('keydown', (e) => {
+function handleSession() {
   if (!typingSessionActive) {
     typingSessionActive = true;
     typingData.startUnixTime = Date.now();
   }
+}
 
+let keyPressStartTimes = {};
+
+function handleKeydown(e){
+  handleSession()
+  
   if (!keyPressStartTimes[e.key]) {
     keyPressStartTimes[e.key] = Date.now();
     typingData.pressTimes.push(Date.now());
     typingData.keyTypes.push(e.key);
     typingData.text.push(e.key);
   }
-});
+}
 
-document.addEventListener('keyup', (e) => {
+function handleKeyup(e){
   if (keyPressStartTimes[e.key]) {
     typingData.releaseTimes.push(Date.now());
     delete keyPressStartTimes[e.key];
   }
-  if (e.key === 'Enter') {
-    // Explicitly capture Enter key release
-    sendTypingData();
-    document.activeElement.blur();  // Unfocus the input to ensure session ends
-  }
-});
 
-document.addEventListener('focusout', (e) => {
+    // Explicitly capture Enter key release
+    if (e.key === 'Enter') {
+      sendTypingData();
+    }
+  
+}
+
+function handleFocusout(e) {
   if (e.target.classList.contains('message_input')) {
     console.log('Focus out detected on message input');
     sendTypingData();
   }
-});
-
-window.addEventListener('sendMessage', () => {
-  console.log('sendMessage event detected');
-  sendTypingData();
-});
-
-document.addEventListener('focusout', (e) => {
   if (!e.relatedTarget || !e.relatedTarget.closest('.message_input')) {
     console.log('Focus out detected');
     sendTypingData();
   }
+}
+
+document.addEventListener('keydown', (e) => { handleKeydown(e) })
+
+document.addEventListener('keyup', (e) =>{ handleKeyup(e) })
+
+document.addEventListener('focusout', (e) => { handleFocusout(e) });
+
+window.addEventListener('sendMessage', () => {
+  console.log('sendMessage event detected');
+  sendTypingData();
 });

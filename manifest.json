@@ -2,7 +2,13 @@
   "manifest_version": 3,
   "name": "Typing Data Logger",
   "version": "1.0",
-  "permissions": ["storage", "activeTab", "scripting", "tabs", "declarativeContent"],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "declarativeContent"
+  ],
   "background": {
     "service_worker": "background.js"
   },
@@ -16,7 +22,5 @@
     "default_popup": "popup.html",
     "default_icon": "icon.png"
   },
-  "host_permissions": [
-    "<all_urls>"
-  ]
+  "host_permissions": ["<all_urls>"]
 }
