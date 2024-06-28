@@ -135,6 +135,18 @@ function handleFocusout(e) {
   }
 }
 
+function handleClick(e) {
+  handleSession()
+  const time = Date.now()
+  //Capture the mouse position relative to the page, not the viewport.
+  const positionX = { time: time, position: e.pageX }
+  const positionY = { time: time, position: e.pageY }
+  typingData.positionX.push(positionX)
+  typingData.positionY.push(positionY)
+}
+
+document.addEventListener('click', (e) => { handleClick(e) })
+
 document.addEventListener('keydown', (e) => { handleKeydown(e) })
 
 document.addEventListener('keyup', (e) =>{ handleKeyup(e) })
