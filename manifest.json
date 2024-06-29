@@ -7,7 +7,8 @@
     "activeTab",
     "scripting",
     "tabs",
-    "declarativeContent"
+    "declarativeContent",
+    "identity"
   ],
   "background": {
     "service_worker": "background.js"
@@ -22,5 +23,15 @@
     "default_popup": "popup.html",
     "default_icon": "icon.png"
   },
-  "host_permissions": ["<all_urls>"]
+  "host_permissions": ["<all_urls>"],
+  "sandbox": {
+    "pages": ["firebase.html"]
+  },
+  "content_security_policy": {
+    "sandbox": "sandbox allow-scripts allow-popups; script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com/; "
+  },
+  "oauth2": {
+    "client_id": "162209288591-mp1sk051mrdstgmqns7g354ldkpt6eln.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/userinfo.email"]
+  }
 }

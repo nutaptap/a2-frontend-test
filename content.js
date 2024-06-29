@@ -1,5 +1,5 @@
 const initialTypingData = {
-  user_id: "a1b2c3d4e5f6g7h8i9j0",
+  user_id: "",
   appContext: document.location.href,
   setting: 1,
   sourceId: "demo",
@@ -29,8 +29,22 @@ let typingData = { ...initialTypingData };
 let typingSessionActive = false;
 let lastElement = null;
 
+function setUser() {
+  chrome.storage.sync.get('user', (result) => {
+    if (result.user.uid) {
+      typingData.user_id = result.user.uid
+      console.log('User set in typing data')
+    } else {
+      console.log('No user found in storage.');
+    }
+  });
+}
+
+setUser()
+
 function resetTypingData() {
   typingData = { ...initialTypingData };
+  setUser()
   typingSessionActive = false;
   lastElement = null;
   console.log("Typing data reset");

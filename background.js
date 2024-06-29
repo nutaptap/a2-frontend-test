@@ -23,3 +23,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ data: lastLog });
   }
 });
+
+function clearStorage() {
+  chrome.storage.sync.clear(() => {
+    console.log('Storage cleared on browser startup.');
+  });
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  clearStorage()
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  clearStorage()
+});
