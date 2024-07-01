@@ -36,7 +36,7 @@ document.getElementById('login').onclick = () => {
     }
 
     const iframe = document.getElementById('firebase-iframe');
-    console.log("Sending login message to iframe with token:", token);
+    console.log("Sending token to iframe");
     iframe.contentWindow.postMessage({ type: "login", token: token }, "*");
   });
 };

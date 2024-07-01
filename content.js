@@ -11,6 +11,7 @@ const initialTypingData = {
   releaseTimes: [],
   keyAreas: [],
   keyTypes: [],
+  click: [],
   positionX: [],
   positionY: [],
   pressure: [],
@@ -152,9 +153,13 @@ function handleFocusout(e) {
 function handleClick(e) {
   handleSession()
   const time = Date.now()
+  const targetElement = e.target.tagName.toLowerCase()
   //Capture the mouse position relative to the page, not the viewport.
-  const positionX = { time: time, position: e.pageX }
-  const positionY = { time: time, position: e.pageY }
+  const click = { time: time, target_element: targetElement, target_role: e.target.role, target_text: e.target.value || e.target.innerText }
+  const positionX = e.pageX
+  const positionY = e.pageY
+
+  typingData.click.push(click)
   typingData.positionX.push(positionX)
   typingData.positionY.push(positionY)
 }
