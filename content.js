@@ -75,6 +75,7 @@ function trimArraysToMatchLength() {
 
 const sendTypingData = debounce(() => {
   if (!typingSessionActive) return;
+  if (typingData.user_id === "") return;
 
   // Trim arrays to ensure matching lengths
   trimArraysToMatchLength();
