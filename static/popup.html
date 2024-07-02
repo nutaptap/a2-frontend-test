@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Typing Data Logger</title>
+    <script src="popup.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main>
+      <h1>Typing Data Logger</h1>
+      <section class="login-container">
+        <button id="login">Login with google</button>
+      </section>
+      <section class="app-container">
+        <img id="profile-img" />
+        <pre id="log-display">Loading...</pre>
+      </section>
+    </main>
+    <iframe
+      id="firebase-iframe"
+      src="firebase.html"
+      style="display: none"
+    ></iframe>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Typing Data Logger",
+  "version": "1.0",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "declarativeContent",
+    "identity"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "host_permissions": ["<all_urls>"],
+  "sandbox": {
+    "pages": ["firebase.html"]
+  },
+  "content_security_policy": {
+    "sandbox": "sandbox allow-scripts allow-popups; script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com/; "
+  },
+  "oauth2": {
+    "client_id": "162209288591-kmb9k6r0kpotpkqpnoidf3mccccqecot.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/userinfo.email"]
+  }
+}

@@ -23,7 +23,7 @@ const initialTypingData = {
   predictionLengths: [],
   predictionTimes: [],
   predictionWords: [],
-  textStructure: []
+  textStructure: [],
 };
 
 let typingData = { ...initialTypingData };
@@ -31,21 +31,21 @@ let typingSessionActive = false;
 let lastElement = null;
 
 function setUser() {
-  chrome.storage.sync.get('user', (result) => {
+  chrome.storage.sync.get("user", (result) => {
     if (result.user.uid) {
-      typingData.user_id = result.user.uid
-      console.log('User set in typing data')
+      typingData.user_id = result.user.uid;
+      console.log("User set in typing data");
     } else {
-      console.log('No user found in storage.');
+      console.log("No user found in storage.");
     }
   });
 }
 
-setUser()
+setUser();
 
 function resetTypingData() {
   typingData = { ...initialTypingData };
-  setUser()
+  setUser();
   typingSessionActive = false;
   lastElement = null;
   console.log("Typing data reset");
@@ -54,7 +54,8 @@ function resetTypingData() {
 function debounce(func, wait) {
   let timeout;
   return function () {
-    const context = this, args = arguments;
+    const context = this,
+      args = arguments;
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(context, args), wait);
   };
@@ -65,10 +66,10 @@ function trimArraysToMatchLength() {
   const releaseLength = typingData.releaseTimes.length;
 
   if (pressLength > releaseLength) {
-    console.log('The array was trimmed, keydown was longer')
+    console.log("The array was trimmed, keydown was longer");
     typingData.pressTimes.length = releaseLength;
   } else if (releaseLength > pressLength) {
-    console.log('The array was trimmed, keyup was longer')
+    console.log("The array was trimmed, keyup was longer");
     typingData.releaseTimes.length = pressLength;
   }
 }
@@ -85,22 +86,32 @@ const sendTypingData = debounce(() => {
 
   function trySendMessage() {
     try {
-      console.log('Attempting to send typing data:', JSON.stringify(typingData, null, 2));
-      chrome.runtime.sendMessage({ type: 'log_key', data: typingData }, (response) => {
-        if (chrome.runtime.lastError) {
-          console.error('Error sending message:', chrome.runtime.lastError.message, chrome.runtime.lastError);
-          if (attempts < maxAttempts) {
-            attempts++;
-            console.log(`Retrying to send typing data (attempt ${attempts})`);
-            trySendMessage();
+      console.log(
+        "Attempting to send typing data:",
+        JSON.stringify(typingData, null, 2)
+      );
+      chrome.runtime.sendMessage(
+        { type: "log_key", data: typingData },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            console.error(
+              "Error sending message:",
+              chrome.runtime.lastError.message,
+              chrome.runtime.lastError
+            );
+            if (attempts < maxAttempts) {
+              attempts++;
+              console.log(`Retrying to send typing data (attempt ${attempts})`);
+              trySendMessage();
+            }
+            return;
           }
-          return;
+          console.log("Typing data sent successfully");
+          resetTypingData();
         }
-        console.log('Typing data sent successfully');
-        resetTypingData();
-      });
+      );
     } catch (error) {
-      console.error('Error during sendTypingData:', error);
+      console.error("Error during sendTypingData:", error);
     }
   }
 
@@ -116,9 +127,9 @@ function handleSession() {
 
 let keyPressStartTimes = {};
 
-function handleKeydown(e){
-  handleSession()
-  
+function handleKeydown(e) {
+  handleSession();
+
   if (!keyPressStartTimes[e.key]) {
     keyPressStartTimes[e.key] = Date.now();
     typingData.pressTimes.push(Date.now());
@@ -127,53 +138,65 @@ function handleKeydown(e){
   }
 }
 
-function handleKeyup(e){
+function handleKeyup(e) {
   if (keyPressStartTimes[e.key]) {
     typingData.releaseTimes.push(Date.now());
     delete keyPressStartTimes[e.key];
   }
 
-    // Explicitly capture Enter key release
-    if (e.key === 'Enter') {
-      sendTypingData();
-    }
-  
+  // Explicitly capture Enter key release
+  if (e.key === "Enter") {
+    sendTypingData();
+  }
 }
 
 function handleFocusout(e) {
-  if (e.target.classList.contains('message_input')) {
-    console.log('Focus out detected on message input');
+  if (e.target.classList.contains("message_input")) {
+    console.log("Focus out detected on message input");
     sendTypingData();
   }
-  if (!e.relatedTarget || !e.relatedTarget.closest('.message_input')) {
-    console.log('Focus out detected');
+  if (!e.relatedTarget || !e.relatedTarget.closest(".message_input")) {
+    console.log("Focus out detected");
     sendTypingData();
   }
 }
 
 function handleClick(e) {
-  handleSession()
-  const time = Date.now()
-  const targetElement = e.target.tagName.toLowerCase()
+  handleSession();
+  const time = Date.now();
+  const targetElement = e.target.tagName.toLowerCase();
   //Capture the mouse position relative to the page, not the viewport.
-  const click = { time: time, target_element: targetElement, target_role: e.target.role, target_text: e.target.value || e.target.innerText }
-  const positionX = e.pageX
-  const positionY = e.pageY
+  const click = {
+    time: time,
+    target_element: targetElement,
+    target_role: e.target.role,
+    target_text: e.target.value || e.target.innerText,
+  };
+  const positionX = e.pageX;
+  const positionY = e.pageY;
 
-  typingData.click.push(click)
-  typingData.positionX.push(positionX)
-  typingData.positionY.push(positionY)
+  typingData.click.push(click);
+  typingData.positionX.push(positionX);
+  typingData.positionY.push(positionY);
 }
 
-document.addEventListener('click', (e) => { handleClick(e) })
+document.addEventListener("click", (e) => {
+  handleClick(e);
+});
 
-document.addEventListener('keydown', (e) => { handleKeydown(e) })
+document.addEventListener("keydown", (e) => {
+  handleKeydown(e);
+});
 
-document.addEventListener('keyup', (e) =>{ handleKeyup(e) })
+document.addEventListener("keyup", (e) => {
+  handleKeyup(e);
+});
 
-document.addEventListener('focusout', (e) => { handleFocusout(e) });
+document.addEventListener("focusout", (e) => {
+  handleFocusout(e);
+});
 
-window.addEventListener('sendMessage', () => {
-  console.log('sendMessage event detected');
+window.addEventListener("sendMessage", () => {
+  console.log("sendMessage event detected");
   sendTypingData();
 });
